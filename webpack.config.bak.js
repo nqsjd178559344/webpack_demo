@@ -4,23 +4,23 @@ const HtmlWebpackPlugin = require('html-webpack-plugin') // 自动生成模板�
 const { CleanWebpackPlugin } = require('clean-webpack-plugin'); // 自动清除dist文件
 
 module.exports = {
-    mode: 'development', // production 默认[打包文件压缩] development[不被压缩]
-    // mode: 'production', // production 默认[打包文件压缩] development[不被压缩]
+    mode: 'production', // production 默认[打包文件压缩] development[不被压缩]
+    // mode: 'production',
     // entry:'./src/index.js', //! 相对位置 简写
-    devtool:'none', // 默认 none
-    // devtool:'source-map',  // 生成一个同名的map文件 // eval:复杂代码下提示不够详细
-    // devtool: 'cheap-module-eval-source-map', // 定位至源码的第几行[开发模式下推荐]
-    // devtool:'cheap-module-source-map', // 不显示源码[生产模式下推荐]
     entry: {
         // main: './src/index.js',// 单一入口
         app: './src/index.js',
         demo: './src/demo.js'
     },
+    devtool:'none', // 默认 none
+    // devtool:'source-map',  // 生成一个同名的map文件 // eval:复杂代码下提示不够详细
+    // devtool: 'cheap-module-eval-source-map', // 定位至源码的第几行[开发模式下推荐]
+    // devtool:'cheap-module-source-map', // 不显示源码[生产模式下推荐]
     devServer:{ 
         // 定义服务访问目录
         // 预安装 webpack-dev-server@3.9.0 // 监听本地更改
         contentBase: path.join(__dirname,'dist'),
-        port:8081,
+        port:8888,
         // proxy:{ // 代理
         //     '/api':'localhost:8081'
         // },
@@ -28,7 +28,7 @@ module.exports = {
     },
     output: {
         // filename: 'dist.js', // 自定义打包文件名[单一入口]
-        filename: '[name].[hash:8].js', // 自定义打包文件名
+        filename: '[name].[hash:8].js', // 自定义打包文件名[不要指定为ext类型]
         // 绝对路径
         path: path.resolve(__dirname, 'dist'), // __dirname=> 项目根路径
         // publicPath:'https://yideng.com/' // 自动注入地址更改: <script src="app.fafed529.js"> => <script src="https://yideng.com/app.fafed529.js"> //!如文件访问出错[图片等],首先排除这里
@@ -48,12 +48,11 @@ module.exports = {
                         //         yarn add core-js@2              yarn add core-js@3
 
                         //      */
-                        //     // ! 必须同时设置corejs 默认 corejs:2版本 => ES7/8等新特性只加于corejs:3版本中,且包含corejs:2内容
+                        // !    // ! 必须同时设置corejs 默认 corejs:2版本 => ES7/8等新特性只加于corejs:3版本中,且包含corejs:2内容
                         //     corejs:3,
                         //     useBuiltIns:'usage' // usage[仅引入需要的[自动引入]] | entry[只支持引入一次] | false[默认]
                         // }]], // 转换ES5+语法
                         // ? 方法2
-                        // presets:["@babel/preset-env"],
                         // plugins:[
                         //     [
                         //         "@babel/plugin-transform-runtime",
@@ -71,7 +70,7 @@ module.exports = {
                 use: {
                     loader: 'url-loader',
                     options: {
-                        limit: 2048, // 小于此才会被打包进list.js,否则采用引入模式
+                        limit: 2048, // 小于此才会被直接打包进list.js,否则采用引入模式
                         name: 'assets/[name].[hash:5].[ext]',
                     }
                 }
@@ -94,8 +93,8 @@ module.exports = {
                 use: [ // less从右至左||从下到上处理
                     // !二者相同
                     // 'style-loader', // 0.21.0 => 将在页面中使用[页面中新增style标签,将CSS注入HTML页面]
-                    // 'postcss-loader', // 2.0.8
                     // 'css-loader', // 0.28.1
+                    // 'postcss-loader', // 2.0.8
                     // 'less-loader' // 4.1.0
                     {
                         loader: 'style-loader'
@@ -136,7 +135,6 @@ module.exports = {
             template: 'src/index.html', // 模板文件
         }), // ^4.0.0-beta.11
         new CleanWebpackPlugin(),
-
     ]
 }
 
@@ -166,7 +164,7 @@ module.exports = {
  * !file-loader流程:
  *  1. 发现 图片文件
  *  2. 改名字[可指定]后打包入dist文件,然后移入dist文件后得到图片名称,作为返回值返回给引入的变量
- * !url-loader:file-loader 高配版
+ * !url-loader:file-loader 高配版[转为base64格式]
  */
 /**
  * postcss-loader:处理css兼容问题
@@ -203,21 +201,50 @@ module.exports = {
  * !已使用@babel/preset-env,为何还不会转义map?
  * 标准引入的语法: 箭头函数 let、const等,可转换
  * 标准引入的全局变量/部分原生对象的新增的原型链上的方法 Promise Symbol Set 等 不会转换 => 用polyfill
- * @babel/polyfill: 
+ * ! @babel/polyfill: 
  *   1. 默认引入全部,引入部分则需要配置[@babel/preset-env]
  * * 2. 以全局变量方法引入,来发类库|组件库时可能造成全局变量的污染
- *   3. 配合corejs使用
+ *   3. 配套使用: corejs
  * ! @babel/plugin-transform-runtime: 以闭包形式注入,保证全局变量不被污染
  *      1. 配套使用: @babel/runtime-corejs3
  * 
  */
 
 /**
- * !webpack --watch 与 HtmlWebpackPlugin
+ * !webpack默认打包全部代码[包括未使用的代码]
+ * 解决方式:
+ *  1. webpack3: 插件:uglifyjsWebpackPlugins
+ *  2. webpack4: mode:production
  */
 
 /**
  * 总结:需要什么安什么
  * 注意:版本匹配
  * !webpack文档更新不及时,loader更新太快,只能安装低版本loader
+ */
+
+/**
+ * ! webpack --watch 与 HtmlWebpackPlugin不可同时使用???
+ */
+
+/** 
+ * ! 用 lodash-es 替换 lodash 后 
+ *    mode = development : 使用 lodash-es 的打包后的体积为使用 lodash 的打包后的体积的2倍
+ *    mode = production : 使用 lodash-es 的打包后的体积为使用 lodash 的打包后的体积的1/4↓倍
+ */
+
+/**
+ * ! webpack 报错: 无效配置
+ * Invalid configuration object. Webpack has been initialised using a configuration object that does not match the API schema.
+ - configuration.optimization.minimize should be a boolean.
+   -> Enable minimizing the output. Uses optimization.minimizer.
+
+ */
+
+/**
+ * !devServer 在生产环境不需要 => 查看oms,的确是的
+ */
+
+/**
+ * !optimization.splitChunks.cacheGroups.vendors 指定 filename会报错??? => 配置minSize后就不报错了...
  */
