@@ -219,12 +219,8 @@ module.exports = {
 
 /**
  * 总结:需要什么安什么
- * 注意:版本匹配
+ * ?注意:版本匹配<webpack4时尽量选择安装2年前的插件>
  * !webpack文档更新不及时,loader更新太快,只能安装低版本loader
- */
-
-/**
- * ! webpack --watch 与 HtmlWebpackPlugin不可同时使用???
  */
 
 /** 
@@ -238,11 +234,14 @@ module.exports = {
  * Invalid configuration object. Webpack has been initialised using a configuration object that does not match the API schema.
  - configuration.optimization.minimize should be a boolean.
    -> Enable minimizing the output. Uses optimization.minimizer.
-
  */
 
 /**
  * !devServer 在生产环境不需要 => 查看oms,的确是的
+ */
+
+/**
+ * ! webpack --watch 与 HtmlWebpackPlugin不可同时使用???
  */
 
 /**
