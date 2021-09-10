@@ -2,7 +2,7 @@ const path = require('path') // 处理路径 => 用import则需要对webpack进�
 const HtmlWebpackPlugin = require('html-webpack-plugin') // 自动生成模板文件
 const { CleanWebpackPlugin } = require('clean-webpack-plugin'); // 自动清除dist文件
 const webpack = require('webpack');
-// const BundleAnalyzer = require("webpack-bundle-analyzer").BundleAnalyzerPlugin
+// const BundleAnalyzer = require("webpack-bundle-analyzer").BundleAnalyzerPlugin // 输出dist每个文件的大小的树形图
 const argv = require("yargs").argv
 const modeFlag = argv.env === 'production'
 
@@ -13,14 +13,14 @@ module.exports = {
         // jquery: 'jquery',
         // 其他库代码,eg:jquery
     },
-    optimization: {
+    optimization: { // 优化
         splitChunks: {
             chunks: "all", // all:将共同代码打入一个新的包 | async | initial
             minSize: 30000,
             name: false, // 默认true => 表示默认生成名字
             /**
              * * 配置项
-             *  minSize: 20000, // 抽取到的文件压缩前的最小大小
+                minSize: 20000, // 抽取到的文件压缩前的最小大小
                 maxSize: 20000, // 抽取到的文件压缩前的最大大小
                 minChunks: 1, //! 引入后的最小引入次数, default = 1 => minChunks = 3则引入两次jquery时不采用压缩
                 maxAsyncRequests: 30, // 最大按需加载次数
@@ -39,7 +39,7 @@ module.exports = {
                     minChunks: 2,
                     priority: -20,
                     reuseExistingChunk: true, // 模块已打包的话则不再重新打包,默认复用
-                    filename: 'common.js' //! splitChunks.name = false时需指定此处,否则默认为0
+                    filename: 'common.js' //! splitChunks.name = false时需指定此处,否则默认为 i++
                 },
             },
         }
