@@ -203,7 +203,7 @@ module.exports = {
  * 标准引入的全局变量/部分原生对象的新增的原型链上的方法 Promise Symbol Set 等 不会转换 => 用polyfill
  * ! @babel/polyfill: 
  *   1. 默认引入全部,引入部分则需要配置[@babel/preset-env]
- * * 2. 以全局变量方法引入,来发类库|组件库时可能造成全局变量的污染
+ * * 2. 以全局变量方法引入,开发类库|组件库时可能造成全局变量的污染
  *   3. 配套使用: corejs
  * ! @babel/plugin-transform-runtime: 以闭包形式注入,保证全局变量不被污染
  *      1. 配套使用: @babel/runtime-corejs3
