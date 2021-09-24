@@ -135,5 +135,15 @@ ___
 2. 代码包可视化分析工具: webpack-bundle-analyzer => require("webpack-bundle-analyzer").BundleAnalyzerPlugin
 3. 获取环境参数:
    1. 官网=>指南=>环境变量[--env goal=local --env production --progress Tip],在 package.json 中 配置指令 | yargs
+4. .browserslistrc 文件配置
+   ```js
+   [production]
+   > 1% // 全球使用统计选择的浏览器版本覆盖率
+   last 2 versions // 每个浏览器的最后 2 个版本。
+   not dead // 2年内没有官方支持或更新的浏览器。现在是IE 10，IE_Mob 11，BlackBerry 10，BlackBerry 7， Samsung 4和OperaMobile 12.1。
+   not ie <= 10 // 从以前的查询中排除 IE 8 及更低版本。
+   [modern]
+   [ssr]
+   ```
    
    
